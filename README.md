@@ -1,6 +1,14 @@
 # Anotador de Truco
 
-Web app para anotar los puntos del truco. Un solo `index.html`, sin dependencias: se abre en el navegador (celu o compu) y listo.
+Web app para anotar los puntos del truco. Se instala en el celu como una app (ícono propio, pantalla completa, funciona sin internet).
+
+**Link:** https://santiurretsz.github.io/APP-Anotador-de-Truco/ (requiere GitHub Pages activado)
+
+## Instalarla
+- **iPhone:** abrir el link en Safari → botón Compartir → "Agregar a inicio".
+- **Android:** abrir el link en Chrome → menú ⋮ → "Instalar app" (o "Agregar a la pantalla principal").
+
+## Qué hace
 
 - Dos equipos con nombre editable (tocá el nombre para cambiarlo).
 - Puntos con +1, +2, +3 y −1 para corregir.
@@ -12,4 +20,5 @@ Web app para anotar los puntos del truco. Un solo `index.html`, sin dependencias
 ## Changelog
 | Fecha | Cambio |
 |---|---|
+| 17/10/2026 | Instalable como app: manifiesto, íconos y modo sin internet |
 | 17/10/2026 | Primera versión |

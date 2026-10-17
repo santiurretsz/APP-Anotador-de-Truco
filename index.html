@@ -6,7 +6,16 @@
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>Anotador de Truco</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="theme-color" content="#eef1ec">
+<meta name="theme-color" content="#eef1ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e261c" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Anotador de puntos del truco: fósforos, malas y buenas, a 15 o a 30.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Truco">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap">
@@ -38,6 +47,7 @@ body {
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 12px 20px;
+  overscroll-behavior: none;
 }
 button { font-family: var(--body); cursor: pointer; touch-action: manipulation; }
 button:disabled { opacity: .35; cursor: default; }
@@ -318,6 +328,9 @@ button.armed { background: var(--head) !important; border-color: var(--head) !im
   try { window.claude?.hot?.snapshot?.(() => st); } catch (e) {}
   if (window.claude?.hot?.ready) window.claude.hot.ready(start);
   else start(window.claude?.hot?.data ?? {});
+
+  // Instalable como app y usable sin internet.
+  try { navigator.serviceWorker?.register('sw.js').catch(() => {}); } catch (e) {}
 })();
 </script>
 </body>
