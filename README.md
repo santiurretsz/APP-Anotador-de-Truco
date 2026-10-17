@@ -20,5 +20,6 @@ Web app para anotar los puntos del truco. Se instala en el celu como una app (í
 ## Changelog
 | Fecha | Cambio |
 |---|---|
+| 17/10/2026 | Estética de mazo de naipes: verde bosque, tarjetas marfil con doble filete y esquinas caladas, letra con serifa; ícono nuevo |
 | 17/10/2026 | Instalable como app: manifiesto, íconos y modo sin internet |
 | 17/10/2026 | Primera versión |

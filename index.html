@@ -3,11 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>Anotador de Truco</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="theme-color" content="#eef1ec" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e261c" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#1f3a35">
 <meta name="description" content="Anotador de puntos del truco: fósforos, malas y buenas, a 15 o a 30.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -15,128 +12,143 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Truco">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
-/* Layout: dos columnas enfrentadas, una por equipo, como la libreta sobre el paño; fósforos en cuadraditos de 5 y botones grandes al pie */
+/* Estética de mazo de naipes españoles: caja verde bosque con ramitas finas, tarjetas marfil con doble filete (verde y óxido) y esquinas caladas.
+   Un solo aspecto a propósito (no cambia con el modo oscuro del teléfono). Dos columnas enfrentadas, una por equipo. */
 :root {
-  --bg: #eef1ec; --panel: #fbfcfa; --ink: #17201a; --muted: #56655b; --line: #cdd6ce;
-  --stick: #9a6b2f; --head: #c43d24; --oro: #9c7409;
-  --t0: #1d4f91; --t1: #a3302a; --on-team: #ffffff;
-  --display: "Anton", Impact, "Arial Narrow", sans-serif;
-  --body: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e261c; --panel: #143326; --ink: #edf3ee; --muted: #9fb6a8; --line: #2d5443;
-    --stick: #e2bd80; --head: #ff6b4f; --oro: #e6bd45;
-    --t0: #79a9ec; --t1: #f08070; --on-team: #0b1a12; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e261c; --panel: #143326; --ink: #edf3ee; --muted: #9fb6a8; --line: #2d5443;
-  --stick: #e2bd80; --head: #ff6b4f; --oro: #e6bd45;
-  --t0: #79a9ec; --t1: #f08070; --on-team: #0b1a12; color-scheme: dark;
+  --forest: #1f3a35; --forest-deep: #172d29; --cream: #f2e9d4; --ink: #22302c; --muted: #6a6450;
+  --green: #2f5a4c; --rust: #a8402b; --gold: #8a7140; --gold-soft: #c9b07a; --tan: #d8cbab;
+  --on-dark: #efe6cf; --on-dark-dim: rgba(239, 230, 207, .72); --on-dark-line: rgba(239, 230, 207, .42);
+  --cream-line: rgba(242, 233, 212, .6);
+  --display: "Libre Caslon Display", "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --serif: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  color-scheme: light;
+  background: var(--forest);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
-  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px;
+  margin: 0;
+  background: var(--forest) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240' fill='none' stroke='rgba(226,236,226,0.075)' stroke-width='1.1' stroke-linecap='round'%3E%3Cg transform='translate(18 110) rotate(-10) scale(1.3)'%3E%3Cpath d='M0 0 C 15 -4, 32 -16, 52 -38'/%3E%3Cellipse cx='9' cy='-6' rx='4.6' ry='1.9' transform='rotate(-55 9 -6)'/%3E%3Cellipse cx='13' cy='-1' rx='4.6' ry='1.9' transform='rotate(20 13 -1)'/%3E%3Cellipse cx='19' cy='-13' rx='4.6' ry='1.9' transform='rotate(-60 19 -13)'/%3E%3Cellipse cx='24' cy='-7' rx='4.6' ry='1.9' transform='rotate(15 24 -7)'/%3E%3Cellipse cx='29' cy='-21' rx='4.6' ry='1.9' transform='rotate(-65 29 -21)'/%3E%3Cellipse cx='34' cy='-15' rx='4.6' ry='1.9' transform='rotate(10 34 -15)'/%3E%3Cellipse cx='40' cy='-28' rx='4.6' ry='1.9' transform='rotate(-60 40 -28)'/%3E%3Cellipse cx='44' cy='-23' rx='4.6' ry='1.9' transform='rotate(5 44 -23)'/%3E%3Cellipse cx='50' cy='-35' rx='4.6' ry='1.9' transform='rotate(-30 50 -35)'/%3E%3C/g%3E%3Cg transform='translate(150 230) rotate(-40) scale(1.1)'%3E%3Cpath d='M0 0 C 15 -4, 32 -16, 52 -38'/%3E%3Cellipse cx='9' cy='-6' rx='4.6' ry='1.9' transform='rotate(-55 9 -6)'/%3E%3Cellipse cx='13' cy='-1' rx='4.6' ry='1.9' transform='rotate(20 13 -1)'/%3E%3Cellipse cx='19' cy='-13' rx='4.6' ry='1.9' transform='rotate(-60 19 -13)'/%3E%3Cellipse cx='24' cy='-7' rx='4.6' ry='1.9' transform='rotate(15 24 -7)'/%3E%3Cellipse cx='29' cy='-21' rx='4.6' ry='1.9' transform='rotate(-65 29 -21)'/%3E%3Cellipse cx='34' cy='-15' rx='4.6' ry='1.9' transform='rotate(10 34 -15)'/%3E%3Cellipse cx='40' cy='-28' rx='4.6' ry='1.9' transform='rotate(-60 40 -28)'/%3E%3Cellipse cx='44' cy='-23' rx='4.6' ry='1.9' transform='rotate(5 44 -23)'/%3E%3Cellipse cx='50' cy='-35' rx='4.6' ry='1.9' transform='rotate(-30 50 -35)'/%3E%3C/g%3E%3Cg transform='translate(200 70) rotate(160) scale(1.0)'%3E%3Cpath d='M0 0 C 15 -4, 32 -16, 52 -38'/%3E%3Cellipse cx='9' cy='-6' rx='4.6' ry='1.9' transform='rotate(-55 9 -6)'/%3E%3Cellipse cx='13' cy='-1' rx='4.6' ry='1.9' transform='rotate(20 13 -1)'/%3E%3Cellipse cx='19' cy='-13' rx='4.6' ry='1.9' transform='rotate(-60 19 -13)'/%3E%3Cellipse cx='24' cy='-7' rx='4.6' ry='1.9' transform='rotate(15 24 -7)'/%3E%3Cellipse cx='29' cy='-21' rx='4.6' ry='1.9' transform='rotate(-65 29 -21)'/%3E%3Cellipse cx='34' cy='-15' rx='4.6' ry='1.9' transform='rotate(10 34 -15)'/%3E%3Cellipse cx='40' cy='-28' rx='4.6' ry='1.9' transform='rotate(-60 40 -28)'/%3E%3Cellipse cx='44' cy='-23' rx='4.6' ry='1.9' transform='rotate(5 44 -23)'/%3E%3Cellipse cx='50' cy='-35' rx='4.6' ry='1.9' transform='rotate(-30 50 -35)'/%3E%3C/g%3E%3Cg transform='translate(96 30) rotate(40) scale(0.8)'%3E%3Cpath d='M0 0 C 15 -4, 32 -16, 52 -38'/%3E%3Cellipse cx='9' cy='-6' rx='4.6' ry='1.9' transform='rotate(-55 9 -6)'/%3E%3Cellipse cx='13' cy='-1' rx='4.6' ry='1.9' transform='rotate(20 13 -1)'/%3E%3Cellipse cx='19' cy='-13' rx='4.6' ry='1.9' transform='rotate(-60 19 -13)'/%3E%3Cellipse cx='24' cy='-7' rx='4.6' ry='1.9' transform='rotate(15 24 -7)'/%3E%3Cellipse cx='29' cy='-21' rx='4.6' ry='1.9' transform='rotate(-65 29 -21)'/%3E%3Cellipse cx='34' cy='-15' rx='4.6' ry='1.9' transform='rotate(10 34 -15)'/%3E%3Cellipse cx='40' cy='-28' rx='4.6' ry='1.9' transform='rotate(-60 40 -28)'/%3E%3Cellipse cx='44' cy='-23' rx='4.6' ry='1.9' transform='rotate(5 44 -23)'/%3E%3Cellipse cx='50' cy='-35' rx='4.6' ry='1.9' transform='rotate(-30 50 -35)'/%3E%3C/g%3E%3Cg fill='rgba(226,236,226,0.08)' stroke='none'%3E%3Ccircle cx='128' cy='130' r='1.4'/%3E%3Ccircle cx='60' cy='200' r='1.1'/%3E%3Ccircle cx='214' cy='150' r='1.2'/%3E%3Ccircle cx='30' cy='22' r='1'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  color: var(--on-dark); font-family: var(--serif); font-size: 16px;
   -webkit-tap-highlight-color: transparent;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 12px 20px;
+  padding-block: 14px 22px;
   overscroll-behavior: none;
 }
-button { font-family: var(--body); cursor: pointer; touch-action: manipulation; }
+button { font-family: var(--serif); cursor: pointer; touch-action: manipulation; }
 button:disabled { opacity: .35; cursor: default; }
-button:focus-visible, .name:focus-visible { outline: 3px solid var(--oro); outline-offset: 2px; }
+button:focus-visible, .name:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
 
-.app { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.app { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-h1 { font-family: var(--display); font-weight: 400; font-size: 2rem; line-height: 1; letter-spacing: .03em; text-transform: uppercase; margin: 0; }
-.seg { display: inline-flex; gap: 2px; padding: 3px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--panel); }
-.seg button { border: 0; background: transparent; color: var(--muted); font-weight: 700; font-size: .95rem; min-height: 38px; padding: 0 16px; border-radius: 999px; }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+/* Tarjeta marfil con esquinas caladas y doble filete (imagen de 9 partes: las esquinas no se deforman) */
+.frame { border: 16px solid transparent; border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath fill='%23f2e9d4' d='M8 0 H52 A8 8 0 0 0 60 8 V52 A8 8 0 0 0 52 60 H8 A8 8 0 0 0 0 52 V8 A8 8 0 0 0 8 0 Z'/%3E%3Cpath fill='none' stroke='%232c4a52' stroke-width='1' d='M10.95 3.5 H49.05 A11.5 11.5 0 0 0 56.5 10.95 V49.05 A11.5 11.5 0 0 0 49.05 56.5 H10.95 A11.5 11.5 0 0 0 3.5 49.05 V10.95 A11.5 11.5 0 0 0 10.95 3.5 Z'/%3E%3Cpath fill='none' stroke='%23a8402b' stroke-width='.9' d='M12.96 6.5 H47.04 A14.5 14.5 0 0 0 53.5 12.96 V47.04 A14.5 14.5 0 0 0 47.04 53.5 H12.96 A14.5 14.5 0 0 0 6.5 47.04 V12.96 A14.5 14.5 0 0 0 12.96 6.5 Z'/%3E%3C/svg%3E") 20 fill / 16px stretch; }
+.frame-sm { border-width: 12px; border-image-width: 12px; }
 
-.board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.title { align-self: center; display: flex; align-items: center; gap: 10px; padding: 0 8px; color: var(--gold); }
+.title h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 2.3rem; line-height: 1.15; letter-spacing: .02em; }
+.sprig { display: block; width: 34px; height: 20px; flex: none; }
+.sprig.flip { transform: scaleX(-1); }
+
+.board { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .team {
-  --tc: var(--t0);
-  min-width: 0; display: flex; flex-direction: column; gap: 10px;
-  padding: 12px 10px; background: var(--panel); border: 1.5px solid var(--line); border-radius: 14px;
-  transition: opacity .2s;
+  --tc: var(--green);
+  min-width: 0; display: flex; flex-direction: column; gap: 9px; padding: 4px 2px;
+  color: var(--ink); transition: opacity .2s;
 }
-.team[data-t="1"] { --tc: var(--t1); }
-.team.winner { border-color: var(--oro); box-shadow: inset 0 0 0 2px var(--oro); }
-.team.winner .num { color: var(--oro); }
-.team.loser { opacity: .55; }
+.team[data-t="1"] { --tc: var(--rust); }
+.team.loser { opacity: .6; }
+.team.winner .num { color: var(--tc); }
 
 .name {
-  width: 100%; min-width: 0; padding: 4px 2px; border: 0; border-bottom: 1.5px dashed transparent;
+  width: 100%; min-width: 0; padding: 2px; border: 0; border-bottom: 1px dashed transparent;
   background: transparent; color: var(--tc); text-align: center;
-  font: 700 1.05rem var(--body); text-transform: uppercase; letter-spacing: .08em;
+  font: 700 .92rem var(--serif); text-transform: uppercase; letter-spacing: .14em;
 }
-.name:hover { border-bottom-color: var(--line); }
 .name:focus { outline: none; border-bottom-color: var(--tc); }
 
-.num { font-family: var(--display); font-size: clamp(3.6rem, 17vw, 5.5rem); line-height: 1; text-align: center; font-variant-numeric: tabular-nums; }
-.sub { min-height: 1.3em; text-align: center; color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
-.team.winner .sub { color: var(--oro); font-weight: 700; }
+.num { font-family: var(--serif); font-weight: 700; font-size: clamp(3.4rem, 16vw, 5.2rem); line-height: 1.05; text-align: center; font-variant-numeric: lining-nums tabular-nums; }
+.sub { min-height: 1.3em; text-align: center; color: var(--muted); font-style: italic; font-size: .88rem; }
+.team.winner .sub { color: var(--tc); font-style: normal; font-weight: 700; }
 
 .sticks { display: flex; justify-content: center; gap: 8px; }
 .half { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.half + .half { border-left: 1.5px dashed var(--line); padding-left: 8px; }
-.half span { font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
-.box { display: block; width: clamp(40px, 11vw, 56px); max-width: 100%; aspect-ratio: 1; }
-.box .g { stroke: var(--line); stroke-width: 2; stroke-linecap: round; }
-.box .s { stroke: var(--stick); stroke-width: 3.4; stroke-linecap: round; }
-.box .h { fill: var(--head); }
+.half + .half { border-left: 1px solid var(--tan); padding-left: 8px; }
+.half span { font-style: italic; font-size: .78rem; color: var(--muted); }
+.box { display: block; width: clamp(40px, 11vw, 54px); max-width: 100%; aspect-ratio: 1; }
+.box .g { stroke: var(--tan); stroke-width: 1.6; stroke-linecap: round; }
+.box .s { stroke: var(--green); stroke-width: 3.2; stroke-linecap: round; }
+.box .h { fill: var(--rust); }
 
 .plus {
-  min-height: 64px; border: 0; border-radius: 12px; background: var(--tc); color: var(--on-team);
-  font-family: var(--display); font-size: 2rem; letter-spacing: .03em;
+  min-height: 60px; border: 0; border-radius: 6px; background: var(--tc); color: var(--cream);
+  font-weight: 700; font-size: 1.9rem;
+  box-shadow: inset 0 0 0 3px var(--tc), inset 0 0 0 4px var(--cream-line);
 }
 .plus:active:not(:disabled) { transform: scale(.97); }
 .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .row button {
-  min-height: 46px; border: 1.5px solid var(--line); border-radius: 10px; background: transparent;
-  color: var(--ink); font-weight: 700; font-size: 1rem; font-variant-numeric: tabular-nums;
+  min-height: 44px; border: 1px solid var(--tan); border-radius: 6px; background: transparent;
+  color: var(--ink); font-weight: 700; font-size: 1rem; font-variant-numeric: lining-nums tabular-nums;
 }
-.row button:active:not(:disabled) { background: var(--line); }
+.row button:active:not(:disabled) { background: var(--tan); }
 
 .bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .bottom button {
-  min-height: 50px; padding: 0 10px; border: 1.5px solid var(--ink); border-radius: 12px;
-  background: transparent; color: var(--ink); font-weight: 700; font-size: 1rem;
+  min-height: 48px; padding: 0 10px; border: 1px solid var(--on-dark-line); border-radius: 6px;
+  background: transparent; color: var(--on-dark); font-weight: 700; font-size: 1rem;
 }
-.bottom button.cta { background: var(--oro); border-color: var(--oro); color: var(--on-team); }
-button.armed { background: var(--head) !important; border-color: var(--head) !important; color: var(--on-team) !important; }
+.bottom button.cta { background: var(--gold-soft); border-color: var(--gold-soft); color: var(--forest-deep); }
+button.armed { background: var(--rust) !important; border-color: var(--rust) !important; color: var(--cream) !important; }
 
-.tally { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 10px; color: var(--muted); font-size: .9rem; }
-.tally b { color: var(--ink); font-variant-numeric: tabular-nums; }
-.link { min-height: 36px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: .85rem; text-decoration: underline; }
+.meta-row { display: flex; justify-content: center; align-items: center; gap: 10px; color: var(--on-dark-dim); font-style: italic; }
+.seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--on-dark-line); border-radius: 999px; }
+.seg button { border: 0; background: transparent; color: var(--on-dark); font-weight: 700; font-size: .95rem; min-height: 36px; padding: 0 16px; border-radius: 999px; }
+.seg button[aria-pressed="true"] { background: var(--cream); color: var(--forest-deep); }
+
+.tally { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 10px; color: var(--on-dark-dim); font-style: italic; font-size: .9rem; }
+.tally b { color: var(--on-dark); font-style: normal; font-variant-numeric: lining-nums tabular-nums; }
+.link { min-height: 36px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--on-dark-dim); font-size: .85rem; text-decoration: underline; }
 .link.armed { text-decoration: none; }
 
 .bump { animation: bump .18s ease-out; }
-@keyframes bump { from { transform: scale(1.14); } to { transform: scale(1); } }
+@keyframes bump { from { transform: scale(1.12); } to { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .bump { animation: none; } .team { transition: none; } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="sprig" viewBox="0 0 40 24">
+    <path d="M3 20 C 13 18, 24 13, 37 4" fill="none" stroke="#a8402b" stroke-width="1.1" stroke-linecap="round"/>
+    <g fill="#2f5a4c">
+      <ellipse cx="9" cy="14.6" rx="3.4" ry="1.5" transform="rotate(-55 9 14.6)"/>
+      <ellipse cx="12" cy="21" rx="3.4" ry="1.5" transform="rotate(20 12 21)"/>
+      <ellipse cx="17" cy="11.6" rx="3.4" ry="1.5" transform="rotate(-60 17 11.6)"/>
+      <ellipse cx="21" cy="17.6" rx="3.4" ry="1.5" transform="rotate(15 21 17.6)"/>
+      <ellipse cx="25" cy="7.6" rx="3.2" ry="1.4" transform="rotate(-65 25 7.6)"/>
+      <ellipse cx="29.5" cy="12.6" rx="3.2" ry="1.4" transform="rotate(10 29.5 12.6)"/>
+      <ellipse cx="37.5" cy="3.4" rx="3" ry="1.4" transform="rotate(-30 37.5 3.4)"/>
+    </g>
+  </symbol>
+</svg>
 
 <div class="app">
-  <header class="top">
+  <header class="title frame frame-sm">
+    <svg class="sprig" aria-hidden="true"><use href="#sprig"/></svg>
     <h1>Truco</h1>
-    <div class="seg" role="group" aria-label="Partida a">
-      <button type="button" id="meta15" data-meta="15" aria-pressed="false">a 15</button>
-      <button type="button" id="meta30" data-meta="30" aria-pressed="true">a 30</button>
-    </div>
+    <svg class="sprig flip" aria-hidden="true"><use href="#sprig"/></svg>
   </header>
 
   <main class="board">
-    <section class="team" data-t="0">
+    <section class="team frame" data-t="0">
       <input class="name" id="name0" maxlength="16" autocomplete="off" spellcheck="false" aria-label="Nombre del equipo 1" value="Nosotros">
       <div class="num" aria-live="polite">0</div>
       <div class="sub">0 malas · faltan 30</div>
@@ -148,7 +160,7 @@ button.armed { background: var(--head) !important; border-color: var(--head) !im
         <button type="button" data-add="3">+3</button>
       </div>
     </section>
-    <section class="team" data-t="1">
+    <section class="team frame" data-t="1">
       <input class="name" id="name1" maxlength="16" autocomplete="off" spellcheck="false" aria-label="Nombre del equipo 2" value="Ellos">
       <div class="num" aria-live="polite">0</div>
       <div class="sub">0 malas · faltan 30</div>
@@ -166,6 +178,14 @@ button.armed { background: var(--head) !important; border-color: var(--head) !im
     <button type="button" id="undo">Deshacer</button>
     <button type="button" id="reset">Nueva partida</button>
   </footer>
+
+  <div class="meta-row">
+    <span>Partida a</span>
+    <div class="seg" role="group" aria-label="Partida a">
+      <button type="button" id="meta15" data-meta="15" aria-pressed="false">15</button>
+      <button type="button" id="meta30" data-meta="30" aria-pressed="true">30</button>
+    </div>
+  </div>
 
   <p class="tally">
     <span>Partidas ganadas:</span>
@@ -276,7 +296,7 @@ button.armed { background: var(--head) !important; border-color: var(--head) !im
     $('#clearWins').hidden = st.wins[0] + st.wins[1] === 0;
   }
 
-  // Confirmación en dos toques (el visor no muestra confirm()).
+  // Confirmación en dos toques.
   function arm(btn, label, action) {
     if (btn.classList.contains('armed')) {
       clearTimeout(btn._t); btn.classList.remove('armed'); btn.textContent = btn.dataset.label; action(); return;
@@ -329,8 +349,16 @@ button.armed { background: var(--head) !important; border-color: var(--head) !im
   if (window.claude?.hot?.ready) window.claude.hot.ready(start);
   else start(window.claude?.hot?.data ?? {});
 
-  // Instalable como app y usable sin internet.
-  try { navigator.serviceWorker?.register('sw.js').catch(() => {}); } catch (e) {}
+  // Instalable como app y usable sin internet. Cuando llega una versión nueva, recarga una vez (la partida queda guardada).
+  try {
+    const sw = navigator.serviceWorker;
+    if (sw) {
+      const hadController = !!sw.controller;
+      let reloaded = false;
+      sw.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
+      sw.register('sw.js').catch(() => {});
+    }
+  } catch (e) {}
 })();
 </script>
 </body>
