@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>Anotador de Truco</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#eef1ec">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap">
+<style>
+/* Layout: dos columnas enfrentadas, una por equipo, como la libreta sobre el paño; fósforos en cuadraditos de 5 y botones grandes al pie */
+:root {
+  --bg: #eef1ec; --panel: #fbfcfa; --ink: #17201a; --muted: #56655b; --line: #cdd6ce;
+  --stick: #9a6b2f; --head: #c43d24; --oro: #9c7409;
+  --t0: #1d4f91; --t1: #a3302a; --on-team: #ffffff;
+  --display: "Anton", Impact, "Arial Narrow", sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e261c; --panel: #143326; --ink: #edf3ee; --muted: #9fb6a8; --line: #2d5443;
+    --stick: #e2bd80; --head: #ff6b4f; --oro: #e6bd45;
+    --t0: #79a9ec; --t1: #f08070; --on-team: #0b1a12; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e261c; --panel: #143326; --ink: #edf3ee; --muted: #9fb6a8; --line: #2d5443;
+  --stick: #e2bd80; --head: #ff6b4f; --oro: #e6bd45;
+  --t0: #79a9ec; --t1: #f08070; --on-team: #0b1a12; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px 20px;
+}
+button { font-family: var(--body); cursor: pointer; touch-action: manipulation; }
+button:disabled { opacity: .35; cursor: default; }
+button:focus-visible, .name:focus-visible { outline: 3px solid var(--oro); outline-offset: 2px; }
+
+.app { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+h1 { font-family: var(--display); font-weight: 400; font-size: 2rem; line-height: 1; letter-spacing: .03em; text-transform: uppercase; margin: 0; }
+.seg { display: inline-flex; gap: 2px; padding: 3px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--panel); }
+.seg button { border: 0; background: transparent; color: var(--muted); font-weight: 700; font-size: .95rem; min-height: 38px; padding: 0 16px; border-radius: 999px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+.board { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.team {
+  --tc: var(--t0);
+  min-width: 0; display: flex; flex-direction: column; gap: 10px;
+  padding: 12px 10px; background: var(--panel); border: 1.5px solid var(--line); border-radius: 14px;
+  transition: opacity .2s;
+}
+.team[data-t="1"] { --tc: var(--t1); }
+.team.winner { border-color: var(--oro); box-shadow: inset 0 0 0 2px var(--oro); }
+.team.winner .num { color: var(--oro); }
+.team.loser { opacity: .55; }
+
+.name {
+  width: 100%; min-width: 0; padding: 4px 2px; border: 0; border-bottom: 1.5px dashed transparent;
+  background: transparent; color: var(--tc); text-align: center;
+  font: 700 1.05rem var(--body); text-transform: uppercase; letter-spacing: .08em;
+}
+.name:hover { border-bottom-color: var(--line); }
+.name:focus { outline: none; border-bottom-color: var(--tc); }
+
+.num { font-family: var(--display); font-size: clamp(3.6rem, 17vw, 5.5rem); line-height: 1; text-align: center; font-variant-numeric: tabular-nums; }
+.sub { min-height: 1.3em; text-align: center; color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.team.winner .sub { color: var(--oro); font-weight: 700; }
+
+.sticks { display: flex; justify-content: center; gap: 8px; }
+.half { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.half + .half { border-left: 1.5px dashed var(--line); padding-left: 8px; }
+.half span { font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+.box { display: block; width: clamp(40px, 11vw, 56px); max-width: 100%; aspect-ratio: 1; }
+.box .g { stroke: var(--line); stroke-width: 2; stroke-linecap: round; }
+.box .s { stroke: var(--stick); stroke-width: 3.4; stroke-linecap: round; }
+.box .h { fill: var(--head); }
+
+.plus {
+  min-height: 64px; border: 0; border-radius: 12px; background: var(--tc); color: var(--on-team);
+  font-family: var(--display); font-size: 2rem; letter-spacing: .03em;
+}
+.plus:active:not(:disabled) { transform: scale(.97); }
+.row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.row button {
+  min-height: 46px; border: 1.5px solid var(--line); border-radius: 10px; background: transparent;
+  color: var(--ink); font-weight: 700; font-size: 1rem; font-variant-numeric: tabular-nums;
+}
+.row button:active:not(:disabled) { background: var(--line); }
+
+.bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bottom button {
+  min-height: 50px; padding: 0 10px; border: 1.5px solid var(--ink); border-radius: 12px;
+  background: transparent; color: var(--ink); font-weight: 700; font-size: 1rem;
+}
+.bottom button.cta { background: var(--oro); border-color: var(--oro); color: var(--on-team); }
+button.armed { background: var(--head) !important; border-color: var(--head) !important; color: var(--on-team) !important; }
+
+.tally { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 10px; color: var(--muted); font-size: .9rem; }
+.tally b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.link { min-height: 36px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: .85rem; text-decoration: underline; }
+.link.armed { text-decoration: none; }
+
+.bump { animation: bump .18s ease-out; }
+@keyframes bump { from { transform: scale(1.14); } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .bump { animation: none; } .team { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <h1>Truco</h1>
+    <div class="seg" role="group" aria-label="Partida a">
+      <button type="button" id="meta15" data-meta="15" aria-pressed="false">a 15</button>
+      <button type="button" id="meta30" data-meta="30" aria-pressed="true">a 30</button>
+    </div>
+  </header>
+
+  <main class="board">
+    <section class="team" data-t="0">
+      <input class="name" id="name0" maxlength="16" autocomplete="off" spellcheck="false" aria-label="Nombre del equipo 1" value="Nosotros">
+      <div class="num" aria-live="polite">0</div>
+      <div class="sub">0 malas · faltan 30</div>
+      <div class="sticks"></div>
+      <button type="button" class="plus" data-add="1">+1</button>
+      <div class="row">
+        <button type="button" data-add="-1" aria-label="Restar 1">−1</button>
+        <button type="button" data-add="2">+2</button>
+        <button type="button" data-add="3">+3</button>
+      </div>
+    </section>
+    <section class="team" data-t="1">
+      <input class="name" id="name1" maxlength="16" autocomplete="off" spellcheck="false" aria-label="Nombre del equipo 2" value="Ellos">
+      <div class="num" aria-live="polite">0</div>
+      <div class="sub">0 malas · faltan 30</div>
+      <div class="sticks"></div>
+      <button type="button" class="plus" data-add="1">+1</button>
+      <div class="row">
+        <button type="button" data-add="-1" aria-label="Restar 1">−1</button>
+        <button type="button" data-add="2">+2</button>
+        <button type="button" data-add="3">+3</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bottom">
+    <button type="button" id="undo">Deshacer</button>
+    <button type="button" id="reset">Nueva partida</button>
+  </footer>
+
+  <p class="tally">
+    <span>Partidas ganadas:</span>
+    <span><span id="w0n">Nosotros</span> <b id="w0">0</b></span>
+    <span><span id="w1n">Ellos</span> <b id="w1">0</b></span>
+    <button type="button" class="link" id="clearWins">Poner en cero</button>
+  </p>
+</div>
+
+<script>
+(function () {
+  const KEY = 'anotador-truco-v1';
+  const DEFAULT_NAMES = ['Nosotros', 'Ellos'];
+  const fresh = () => ({ names: DEFAULT_NAMES.slice(), pts: [0, 0], meta: 30, hist: [], wins: [0, 0] });
+  // Fósforos de cada cuadradito, en el orden en que se dibujan: izquierda, arriba, derecha, abajo, diagonal. La cabeza va en (x2, y2).
+  const SEG = [[8, 36, 8, 12], [12, 8, 36, 8], [40, 12, 40, 36], [36, 40, 12, 40], [14, 34, 34, 14]];
+
+  const $ = (s) => document.querySelector(s);
+  const teams = Array.from(document.querySelectorAll('.team'));
+  let st;
+
+  const valid = (d) => d && Array.isArray(d.pts) && d.pts.length === 2 && Array.isArray(d.names) && (d.meta === 15 || d.meta === 30);
+  const normalize = (d) => {
+    const s = Object.assign(fresh(), d);
+    if (!Array.isArray(s.hist)) s.hist = [];
+    if (!Array.isArray(s.wins) || s.wins.length !== 2) s.wins = [0, 0];
+    return s;
+  };
+  function load() {
+    try { const d = JSON.parse(localStorage.getItem(KEY)); return valid(d) ? normalize(d) : null; } catch (e) { return null; }
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+  function buzz() { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} }
+
+  const winner = () => st.pts.findIndex((p) => p >= st.meta);
+
+  function add(t, n) {
+    if (n > 0 && winner() !== -1) return;
+    const next = Math.max(0, Math.min(st.meta, st.pts[t] + n));
+    if (next === st.pts[t]) return;
+    st.hist.push(st.pts.slice());
+    if (st.hist.length > 300) st.hist.shift();
+    st.pts[t] = next;
+    buzz(); save(); render(t);
+  }
+  function undo() {
+    const prev = st.hist.pop();
+    if (!prev) return;
+    st.pts = prev;
+    save(); render();
+  }
+  function newGame() {
+    const w = winner();
+    if (w !== -1) st.wins[w]++;
+    st.pts = [0, 0]; st.hist = [];
+    save(); render();
+  }
+
+  function subText(p) {
+    const left = Math.max(0, st.meta - p);
+    if (left === 0) return '¡Ganó la partida!';
+    if (st.meta === 15) return 'faltan ' + left;
+    const zone = p <= 15 ? p + (p === 1 ? ' mala' : ' malas') : (p - 15) + (p - 15 === 1 ? ' buena' : ' buenas');
+    return zone + ' · faltan ' + left;
+  }
+
+  function box(n) {
+    let s = '';
+    SEG.forEach(([x1, y1, x2, y2], k) => {
+      s += k < n
+        ? `<line class="s" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><circle class="h" cx="${x2}" cy="${y2}" r="3.2"/>`
+        : `<line class="g" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+    });
+    return `<svg class="box" viewBox="0 0 48 48" aria-hidden="true">${s}</svg>`;
+  }
+  function sticks(p) {
+    p = Math.min(p, st.meta);
+    const col = (first, label) => {
+      let h = '<div class="half">' + (label ? `<span>${label}</span>` : '');
+      for (let b = first; b < first + 3; b++) h += box(Math.max(0, Math.min(5, p - b * 5)));
+      return h + '</div>';
+    };
+    return st.meta === 30 ? col(0, 'malas') + col(3, 'buenas') : col(0, '');
+  }
+
+  function render(bumped) {
+    const w = winner();
+    teams.forEach((el, i) => {
+      const p = st.pts[i];
+      const num = el.querySelector('.num');
+      num.textContent = p;
+      if (bumped === i) { num.classList.remove('bump'); void num.offsetWidth; num.classList.add('bump'); }
+      el.querySelector('.sub').textContent = subText(p);
+      el.querySelector('.sticks').innerHTML = sticks(p);
+      el.classList.toggle('winner', w === i);
+      el.classList.toggle('loser', w !== -1 && w !== i);
+      el.querySelectorAll('[data-add]').forEach((b) => {
+        b.disabled = Number(b.dataset.add) > 0 ? w !== -1 : p === 0;
+      });
+      const input = el.querySelector('.name');
+      if (document.activeElement !== input) input.value = st.names[i];
+      $('#w' + i + 'n').textContent = st.names[i];
+      $('#w' + i).textContent = st.wins[i];
+    });
+    document.querySelectorAll('[data-meta]').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.meta) === st.meta)));
+    $('#undo').disabled = st.hist.length === 0;
+    $('#reset').classList.toggle('cta', w !== -1);
+    $('#clearWins').hidden = st.wins[0] + st.wins[1] === 0;
+  }
+
+  // Confirmación en dos toques (el visor no muestra confirm()).
+  function arm(btn, label, action) {
+    if (btn.classList.contains('armed')) {
+      clearTimeout(btn._t); btn.classList.remove('armed'); btn.textContent = btn.dataset.label; action(); return;
+    }
+    btn.dataset.label = btn.textContent;
+    btn.textContent = label;
+    btn.classList.add('armed');
+    btn._t = setTimeout(() => { btn.classList.remove('armed'); btn.textContent = btn.dataset.label; }, 3000);
+  }
+
+  document.querySelector('.board').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-add]');
+    if (!b || b.disabled) return;
+    add(teams.indexOf(b.closest('.team')), Number(b.dataset.add));
+  });
+  teams.forEach((el, i) => {
+    const input = el.querySelector('.name');
+    input.addEventListener('input', () => { st.names[i] = input.value.trim() || DEFAULT_NAMES[i]; save(); render(); });
+    input.addEventListener('blur', () => { input.value = st.names[i]; });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); });
+  });
+  document.querySelectorAll('[data-meta]').forEach((b) => b.addEventListener('click', () => {
+    st.meta = Number(b.dataset.meta); save(); render();
+  }));
+  $('#undo').addEventListener('click', undo);
+  $('#reset').addEventListener('click', (e) => {
+    const playing = winner() === -1 && (st.pts[0] > 0 || st.pts[1] > 0);
+    if (playing) arm(e.currentTarget, 'Tocá para confirmar', newGame); else newGame();
+  });
+  $('#clearWins').addEventListener('click', (e) => arm(e.currentTarget, 'Tocá para confirmar', () => { st.wins = [0, 0]; save(); render(); }));
+
+  // Pantalla siempre prendida mientras se juega.
+  let lock = null;
+  async function keepAwake() {
+    try {
+      if (lock || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+      lock = await navigator.wakeLock.request('screen');
+      lock.addEventListener('release', () => { lock = null; });
+    } catch (e) {}
+  }
+  document.addEventListener('visibilitychange', keepAwake);
+  document.addEventListener('pointerdown', keepAwake);
+
+  function start(data) {
+    st = valid(data) ? normalize(data) : (load() || fresh());
+    render();
+    keepAwake();
+  }
+  try { window.claude?.hot?.snapshot?.(() => st); } catch (e) {}
+  if (window.claude?.hot?.ready) window.claude.hot.ready(start);
+  else start(window.claude?.hot?.data ?? {});
+})();
+</script>
+</body>
+</html>
